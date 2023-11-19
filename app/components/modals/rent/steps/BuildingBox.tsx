@@ -15,11 +15,13 @@ const BuildingBox:FC<TProps> = (props) => {
   const [count, setCount] = useState<number>(0);
 
   const increment = () => {
+    setCount((prev) => prev + 1);
     onChange(count + 1);
   };
 
   const decrement = () => {
     if (count > 0) {
+      setCount((prev) => prev + 1);
       onChange(count - 1);
     }
   };

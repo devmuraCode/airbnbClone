@@ -1,17 +1,28 @@
-import React, { useState } from "react";
+import React, { FC, useState } from "react";
 import Select from "react-select";
 import countries from "world-countries";
-import Map from "../modals/rent/map/Map";
 
-const CounterSelect = () => {
+export type CountrySelectValue = {
+  flag: string;
+  label: string;
+  latlng: number[],
+  region: string;
+  value: string
+}
+
+interface TProps {
+  value: CountrySelectValue;
+  onChange: (value: CountrySelectValue) => void;
+}
+
+const CounterSelect: FC<TProps> = (props) => {
+  const { value, onChange } = props;
   const [isClearable, setIsClearable] = useState(true);
   const [isSearchable, setIsSearchable] = useState(true);
   const [isDisabled, setIsDisabled] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isRtl, setIsRtl] = useState(false);
 
-
-  
   const countryOptions = countries.map((country) => ({
     value: country.cca2,
     label: country.name.common,
@@ -20,13 +31,7 @@ const CounterSelect = () => {
     latlng: country.latlng,
   }));
 
-  
-  
-
-  const formatOptionLabel = (option: {
-    label: string;
-    region: string;
-  }) => (
+  const formatOptionLabel = (option: { label: string; region: string }) => (
     <div className="flex flex-row items-center gap-3">
       <div>
         {option.label},
@@ -40,7 +45,7 @@ const CounterSelect = () => {
       <Select
         className="basic-single"
         classNamePrefix="select"
-        defaultValue={countryOptions[0]}
+        defaultValue={countryOptions}
         isDisabled={isDisabled}
         isLoading={isLoading}
         isClearable={isClearable}
@@ -49,6 +54,8 @@ const CounterSelect = () => {
         name="countries"
         options={countryOptions}
         formatOptionLabel={formatOptionLabel}
+        value={value}
+        onChange={(value) => onChange(value as CountrySelectValue)}
       />
     </>
   );

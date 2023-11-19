@@ -2,6 +2,7 @@
 
 import { UploadButton } from "@/src/utils/uploadthing";
 import { FC } from "react";
+import { toast } from "react-hot-toast";
 
 interface TProps {
   onChange: (value: string) => void;
@@ -15,10 +16,11 @@ const imageUploader:FC<TProps> = (props) => {
         endpoint="imageUploader"
         onClientUploadComplete={(res) => {
           console.log("Files: ", res);
-          alert("Upload Completed");
+          onChange(res[0].url);
+          toast.success("Upload Completed");
         }}
         onUploadError={(error: Error) => {
-          alert(`ERROR! ${error.message}`);
+          toast.error(`ERROR! ${error.message}`);
         }}
       />
     </main>

@@ -9,11 +9,13 @@ import Heading from "../../Heading";
 import { categories } from "../../navbar/Categories";
 import RentCategoryBox from "./steps/RentCategoryBox";
 import BuildingBox from "./steps/BuildingBox";
-import LocationBox from "./steps/LocationBox";
+import Map from "./map/Map";
 import YourPlaceBox from "./steps/YourPlaceBox";
 import PricingBox from "./steps/PricingBox";
 import ImageUploader from "./steps/ImageUploader";
-import { FieldValues, useForm } from "react-hook-form";
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+import CounterSelect from "../../inputs/CounterSelect";
+import dynamic from "next/dynamic";
 enum STEPS {
   CATEGORY = 0,
   LOCATION = 1,
@@ -35,7 +37,7 @@ const RentModal = () => {
     handleSubmit,
     setValue,
     watch,
-    formState: { errors },
+    formState: { isValid, errors },
     reset,
   } = useForm<FieldValues>({
     defaultValues: {
@@ -57,13 +59,25 @@ const RentModal = () => {
   const roomCount = watch("roomCount");
   const bathroomCount = watch("bathroomCount");
   const imageSrc = watch("imageSrc");
+  const price = watch("price")
 
+  const Map = useMemo(() => dynamic(() => import('./map/Map'), { 
+    ssr: false 
+  }), [location]);
   const setCustomValue = (id: string, value: any) => {
     setValue(id, value, {
       shouldDirty: true,
       shouldTouch: true,
       shouldValidate: true,
     });
+  };
+
+  const onSubmit: SubmitHandler<FieldValues> = (data) => {
+    console.log(data);
+    
+    if (steps !== STEPS.PRICE) {
+      nextStep();
+    }
   };
 
   const secondaryActionLabel = useMemo(
@@ -101,7 +115,10 @@ const RentModal = () => {
             title="Where is your place located?"
             subtitle="Help guests find you!"
           />
-          <LocationBox />
+          <CounterSelect value={location} onChange={(value) => setCustomValue("location", value)}/>
+          <div className="pt-5">
+            <Map center={location?.latlng}/>
+          </div>
         </div>
       );
     } else if (steps === STEPS.INFO) {
@@ -118,14 +135,14 @@ const RentModal = () => {
             value={guestCount}
           />
           <BuildingBox
-            title="Guests"
-            subtitle="How many guests do you allow?"
+            title="Rooms"
+            subtitle="How many rooms do you have?"
             onChange={(value) => setCustomValue("roomCount", value)}
             value={roomCount}
           />
           <BuildingBox
-            title="Guests"
-            subtitle="How many guests do you allow?"
+            title="Bathrooms"
+            subtitle="How many bathrooms do you have?"
             onChange={(value) => setCustomValue("bathroomCount", value)}
             value={bathroomCount}
           />
@@ -161,29 +178,35 @@ const RentModal = () => {
             title="New, set your price"
             subtitle="How much do you charge per night?"
           />
-          <PricingBox />
+          <PricingBox value={price} onChange={(value) => setCustomValue("price", value)}/>
         </div>
       );
     }
   };
 
-  const nextStep = () => {
-    setSteps((value) => value + 1);
-  };
+
 
   const onBack = () => {
     setSteps((value) => value - 1);
   };
 
+
+
+  const nextStep = () => {
+
+      setSteps((value) => value + 1);
+    
+  };
+
   return (
     <Modal
-      disabled={false}
+      disabled={!isValid}
       isOpen={userModal.isOpen}
       onClose={userModal.onClose}
       title="Airbnb your home!"
       body={getBodyByStep()}
       actionLabel={"Next"}
-      onSubmit={nextStep}
+      onSubmit={handleSubmit(onSubmit)}
       secondaryActionLabel={secondaryActionLabel}
       secondaryAction={steps === STEPS.CATEGORY ? undefined : onBack}
     />
