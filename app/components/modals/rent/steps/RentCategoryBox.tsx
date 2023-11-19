@@ -1,5 +1,5 @@
 import React, { FC, ReactElement, useCallback } from "react";
-import Heading from "../../Heading";
+import Heading from "../../../Heading";
 import qs from "query-string";
 import { useRouter, useSearchParams } from "next/navigation";
 interface CategoryProps {
@@ -9,7 +9,7 @@ interface CategoryProps {
   isActive: boolean;
   onClick: () => void;
 }
-const RentBox: FC<CategoryProps> = ({
+const RentCategoryBox: FC<CategoryProps> = ({
   description,
   icon,
   label,
@@ -64,4 +64,4 @@ const RentBox: FC<CategoryProps> = ({
   );
 };
 
-export default RentBox;
+export default RentCategoryBox;

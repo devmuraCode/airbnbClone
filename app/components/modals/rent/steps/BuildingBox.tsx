@@ -1,24 +1,34 @@
-import React, { useState } from "react";
+import React, { FC, useState } from "react";
+import { useForm } from "react-hook-form";
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 
-const BuildingInfoBox = () => {
+
+interface TProps {
+  title: string;
+  subtitle: string;
+  value: number;
+  onChange: (value: number) => void;
+}
+
+const BuildingBox:FC<TProps> = (props) => {
+  const { title, subtitle, onChange, value } = props;
   const [count, setCount] = useState<number>(0);
 
   const increment = () => {
-    setCount(count + 1);
+    onChange(count + 1);
   };
 
   const decrement = () => {
     if (count > 0) {
-      setCount(count - 1);
+      onChange(count - 1);
     }
   };
   return (
     <div className="flex flex-row items-center justify-between">
       <div className="flex flex-col">
-        <div className="font-medium">Guast</div>
+        <div className="font-medium">{title}</div>
         <div className="font-light text-gray-600">
-          How many guest do you allow?
+          {subtitle}
         </div>
       </div>
       <div className="flex flex-row items-center gap-4">
@@ -49,7 +59,7 @@ const BuildingInfoBox = () => {
           text-center
         "
         >
-          {count}
+          {value}
         </div>
         <div
           onClick={increment}
@@ -75,4 +85,4 @@ const BuildingInfoBox = () => {
   );
 };
 
-export default BuildingInfoBox;
+export default BuildingBox;
