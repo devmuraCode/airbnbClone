@@ -16,6 +16,8 @@ import ImageUploader from "./steps/ImageUploader";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import CounterSelect from "../../inputs/CounterSelect";
 import dynamic from "next/dynamic";
+import axios from "axios";
+import toast from "react-hot-toast";
 enum STEPS {
   CATEGORY = 0,
   LOCATION = 1,
@@ -29,6 +31,7 @@ const RentModal = () => {
   const [selectedCategoryIndex, setSelectedCategoryIndex] = useState<
     number | null
   >(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const userModal = useUserModal();
 
@@ -59,25 +62,39 @@ const RentModal = () => {
   const roomCount = watch("roomCount");
   const bathroomCount = watch("bathroomCount");
   const imageSrc = watch("imageSrc");
-  const price = watch("price")
+  const price = watch("price");
+  const title = watch("title");
+  const description = watch("description");
 
-  const Map = useMemo(() => dynamic(() => import('./map/Map'), { 
-    ssr: false 
-  }), [location]);
+  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+    if (steps !== STEPS.PRICE) {
+      return nextStep();
+    }
+    try {
+      axios.post("/api/listings", data).then((res) => {
+        console.log(res);
+        toast.success("Listing created");
+        reset();
+        setSteps(STEPS.CATEGORY);
+      });
+    } catch (e) {
+      toast.error("Something went wrong");
+    }
+  };
+
+  const Map = useMemo(
+    () =>
+      dynamic(() => import("./map/Map"), {
+        ssr: false,
+      }),
+    [location]
+  );
   const setCustomValue = (id: string, value: any) => {
     setValue(id, value, {
       shouldDirty: true,
       shouldTouch: true,
       shouldValidate: true,
     });
-  };
-
-  const onSubmit: SubmitHandler<FieldValues> = (data) => {
-    console.log(data);
-    
-    if (steps !== STEPS.PRICE) {
-      nextStep();
-    }
   };
 
   const secondaryActionLabel = useMemo(
@@ -115,9 +132,12 @@ const RentModal = () => {
             title="Where is your place located?"
             subtitle="Help guests find you!"
           />
-          <CounterSelect value={location} onChange={(value) => setCustomValue("location", value)}/>
+          <CounterSelect
+            value={location}
+            onChange={(value) => setCustomValue("location", value)}
+          />
           <div className="pt-5">
-            <Map center={location?.latlng}/>
+            <Map center={location?.latlng} />
           </div>
         </div>
       );
@@ -168,7 +188,7 @@ const RentModal = () => {
             title="How would you describe your place?"
             subtitle="Short and sweet works best!"
           />
-          <YourPlaceBox />
+          <YourPlaceBox onChange={(value) => setCustomValue("title", value)} value={title} register={register}/>
         </div>
       );
     } else if (steps === STEPS.PRICE) {
@@ -178,24 +198,22 @@ const RentModal = () => {
             title="New, set your price"
             subtitle="How much do you charge per night?"
           />
-          <PricingBox value={price} onChange={(value) => setCustomValue("price", value)}/>
+          <PricingBox
+            value={price}
+            onChange={(value) => setCustomValue("price", value)}
+            register={register}
+          />
         </div>
       );
     }
   };
 
-
-
   const onBack = () => {
     setSteps((value) => value - 1);
   };
 
-
-
   const nextStep = () => {
-
-      setSteps((value) => value + 1);
-    
+    setSteps((value) => value + 1);
   };
 
   return (

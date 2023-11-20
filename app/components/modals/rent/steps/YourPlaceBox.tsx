@@ -1,15 +1,16 @@
 import Input from "@/app/components/inputs/Input";
-import React, { useState } from "react";
-import { FieldValues, useForm } from "react-hook-form";
+import React, { FC, useState } from "react";
+import { FieldValues, useForm, UseFormRegister } from "react-hook-form";
 
-type Inputs = {
-  example: string;
-  exampleRequired: string;
-};
-const YourPlaceBox = () => {
+interface TProps {
+  value: string;
+  onChange: (value: string) => void;
+  register: UseFormRegister<FieldValues>;
+}
+const YourPlaceBox:FC<TProps> = (props) => {
+  const { value, onChange, register } = props;
   const [isLoading, setIsLoading] = useState(false);
   const {
-    register,
     formState: { errors },
   } = useForm<FieldValues>({
     defaultValues: {

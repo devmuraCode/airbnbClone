@@ -1,9 +1,7 @@
 "use client";
-
-import { UploadButton } from "@/src/utils/uploadthing";
 import { FC } from "react";
 import { toast } from "react-hot-toast";
-
+import { UploadButton } from "../../../../../src/utils/uploadthing";
 interface TProps {
   onChange: (value: string) => void;
   value: string;
@@ -14,7 +12,7 @@ const imageUploader:FC<TProps> = (props) => {
     <main className="flex flex-col items-center justify-between p-24">
       <UploadButton
         endpoint="imageUploader"
-        onClientUploadComplete={(res) => {
+        onClientUploadComplete={(res: { url: string; }[]) => {
           console.log("Files: ", res);
           onChange(res[0].url);
           toast.success("Upload Completed");
