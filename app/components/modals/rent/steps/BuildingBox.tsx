@@ -1,5 +1,4 @@
 import React, { FC, useState } from "react";
-import { useForm } from "react-hook-form";
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 
 
@@ -15,16 +14,21 @@ const BuildingBox:FC<TProps> = (props) => {
   const [count, setCount] = useState<number>(0);
 
   const increment = () => {
-    setCount((prev) => prev + 1);
-    onChange(count + 1);
+    setCount((prev) => {
+      const updatedCount = prev + 1;
+      onChange(updatedCount);
+      return updatedCount;
+    });
   };
+  
 
   const decrement = () => {
     if (count > 0) {
-      setCount((prev) => prev + 1);
+      setCount((prev) => prev - 1);
       onChange(count - 1);
     }
   };
+  
   return (
     <div className="flex flex-row items-center justify-between">
       <div className="flex flex-col">

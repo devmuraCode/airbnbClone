@@ -12,7 +12,6 @@ const PricingBox: FC<TProps> = (props) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const {
-    
     formState: { errors },
   } = useForm<FieldValues>({
     defaultValues: {
@@ -25,7 +24,8 @@ const PricingBox: FC<TProps> = (props) => {
       <Input
         id="price"
         label="Price"
-        type="number"
+        formatPrice 
+        type="number" 
         disabled={isLoading}
         register={register}
         errors={errors}

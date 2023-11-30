@@ -10,7 +10,7 @@ import { categories } from "../../navbar/Categories";
 import RentCategoryBox from "./steps/RentCategoryBox";
 import BuildingBox from "./steps/BuildingBox";
 import Map from "./map/Map";
-import YourPlaceBox from "./steps/YourPlaceBox";
+import YourPlaceBox from "./steps/RentDescription";
 import PricingBox from "./steps/PricingBox";
 import ImageUploader from "./steps/ImageUploader";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
@@ -50,7 +50,7 @@ const RentModal = () => {
       roomCount: 1,
       bathroomCount: 1,
       imageSrc: "",
-      price: 1,
+      price: null,
       title: "",
       description: "",
     },
@@ -66,19 +66,37 @@ const RentModal = () => {
   const title = watch("title");
   const description = watch("description");
 
-  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-    if (steps !== STEPS.PRICE) {
-      return nextStep();
-    }
+  const postListing = async (data: FieldValues) => {
     try {
-      axios.post("/api/listings", data).then((res) => {
-        console.log(res);
-        toast.success("Listing created");
-        reset();
-        setSteps(STEPS.CATEGORY);
-      });
-    } catch (e) {
-      toast.error("Something went wrong");
+      const response = await createListing(data);
+      handleSuccess(response);
+    } catch (error) {
+      handleError(error);
+    }
+  };
+
+  const createListing = async (data: FieldValues) => {
+    return await axios.post("/api/listings", data);
+  };
+
+  const handleSuccess = (response: any) => {
+    console.log(response);
+    toast.success("Listing created");
+    reset();
+    setSteps(STEPS.CATEGORY);
+    userModal.onClose();
+  };
+
+  const handleError = (error: any) => {
+    console.error(error);
+    toast.error("Something went wrong");
+  };
+
+  const onSubmit: SubmitHandler<FieldValues> = (data) => {
+    if (steps === STEPS.PRICE) {
+      postListing(data);
+    } else {
+     return nextStep();
     }
   };
 
@@ -188,7 +206,11 @@ const RentModal = () => {
             title="How would you describe your place?"
             subtitle="Short and sweet works best!"
           />
-          <YourPlaceBox onChange={(value) => setCustomValue("title", value)} value={title} register={register}/>
+          <YourPlaceBox
+            onChange={(value) => setCustomValue("title", value)}
+            value={title}
+            register={register}
+          />
         </div>
       );
     } else if (steps === STEPS.PRICE) {
@@ -213,7 +235,11 @@ const RentModal = () => {
   };
 
   const nextStep = () => {
-    setSteps((value) => value + 1);
+    if (steps === STEPS.CATEGORY && !category) {
+      toast.error('Please select a category before proceeding');
+      return;
+    }
+    setSteps((prevStep) => prevStep + 1);
   };
 
   return (

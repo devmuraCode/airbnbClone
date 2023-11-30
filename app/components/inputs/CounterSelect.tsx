@@ -5,10 +5,10 @@ import countries from "world-countries";
 export type CountrySelectValue = {
   flag: string;
   label: string;
-  latlng: number[],
+  latlng: number[];
   region: string;
-  value: string
-}
+  value: string;
+};
 
 interface TProps {
   value: CountrySelectValue;
@@ -43,12 +43,13 @@ const CounterSelect: FC<TProps> = (props) => {
   return (
     <>
       <Select
+        required
         className="basic-single"
         classNamePrefix="select"
         defaultValue={countryOptions}
         isDisabled={isDisabled}
         isLoading={isLoading}
-        isClearable={isClearable}
+        isClearable
         isRtl={isRtl}
         isSearchable={isSearchable}
         name="countries"

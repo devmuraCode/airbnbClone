@@ -47,8 +47,9 @@ const RentCategoryBox: FC<CategoryProps> = ({
   }, [label, router, params]);
 
   const onSubmit = () => {
-    onClick();
-    handleClick();
+      onClick();
+      handleClick();
+   
   };
 
   const boxClassName = `block max-w-sm p-3 border  rounded-lg ${
