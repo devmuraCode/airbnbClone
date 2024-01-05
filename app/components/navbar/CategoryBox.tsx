@@ -1,7 +1,7 @@
 "use client";
 import qs from 'query-string';
 import { useRouter, useSearchParams } from "next/navigation";
-import { FC, ReactElement, useCallback, useEffect } from "react";
+import { FC, ReactElement, useCallback } from "react";
 
 interface CategoryProps {
   label: string;

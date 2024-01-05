@@ -11,9 +11,11 @@ import Modal from "@/app/components/modals/Modal";
 import Heading from "@/app/components/Heading";
 import Input from "@/app/components/inputs/Input";
 import toast from "react-hot-toast";
+import useLoginModal from "@/app/hooks/useLoginModal";
 
 const RegisterModal = () => {
   const registerModal = useRegisterModal();
+  const loginModal = useLoginModal();
   const [isLoading, setIsLoading] = useState(false);
   const {
     register,
@@ -27,31 +29,29 @@ const RegisterModal = () => {
     },
   });
 
+
+
+  const onSubmit: SubmitHandler<FieldValues> = (data) => {
+    setIsLoading(true);
+
+    axios.post('/api/register', data)
+    .then(() => {
+      toast.success('Registered!');
+      registerModal.onClose();
+      loginModal.onOpen();
+    })
+    .catch((error) => {
+      toast.error(error);
+    })
+    .finally(() => {
+      setIsLoading(false);
+    })
+  }
+
   const onToggle = useCallback(() => {
     registerModal.onClose();
-    // loginModal.onOpen();
+    loginModal.onOpen();
   }, [registerModal]);
-
-  const onSubmit: SubmitHandler<FieldValues> = useCallback(
-    (data) => {
-      console.log("data", data);
-      setIsLoading(true);
-      axios
-        .post("/api/register", data)
-        .then((res) => {
-          registerModal.onClose();
-          setIsLoading(false);
-        })
-        .catch((err) => {
-          console.log(err);
-          toast.error("Something went wrong");
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
-    },
-    [registerModal, setIsLoading]
-  );
 
   const bodyContent = (
     <div className="flex flex-col gap-4">

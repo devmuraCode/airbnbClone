@@ -1,13 +1,11 @@
-import React, { FC, ReactElement, useCallback } from "react";
-import Heading from "../../../Heading";
-import qs from "query-string";
-import { useRouter, useSearchParams } from "next/navigation";
+import React, { FC, ReactElement } from "react";
 interface CategoryProps {
   label: string;
   icon: ReactElement;
   description: string;
   isActive: boolean;
   onClick: () => void;
+ 
 }
 const RentCategoryBox: FC<CategoryProps> = ({
   description,
@@ -16,40 +14,9 @@ const RentCategoryBox: FC<CategoryProps> = ({
   isActive,
   onClick,
 }) => {
-  const router = useRouter();
-  const params = useSearchParams();
-
-  const handleClick = useCallback(() => {
-    let currentQuery = {};
-
-    if (params) {
-      currentQuery = qs.parse(params.toString());
-    }
-
-    const updatedQuery: any = {
-      ...currentQuery,
-      category: label,
-    };
-
-    if (params?.get("category") === label) {
-      delete updatedQuery.category;
-    }
-
-    const url = qs.stringifyUrl(
-      {
-        url: "/",
-        query: updatedQuery,
-      },
-      { skipNull: true }
-    );
-
-    router.push(url);
-  }, [label, router, params]);
 
   const onSubmit = () => {
       onClick();
-      handleClick();
-   
   };
 
   const boxClassName = `block max-w-sm p-3 border  rounded-lg ${
